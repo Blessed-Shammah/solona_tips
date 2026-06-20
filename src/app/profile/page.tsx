@@ -10,8 +10,18 @@ interface Me {
   plan: string;
   api_key: string;
   balance_usd: string;
+  balance_micros: number;
   created_at: number;
   usage: { calls: number; spent_usd: string };
+}
+
+function formatUsdMicros(micros: number): string {
+  const cents = Math.round(micros / 10_000);
+  const sign = cents < 0 ? "-" : "";
+  const absCents = Math.abs(cents);
+  const dollars = Math.floor(absCents / 100).toLocaleString();
+  const centsPart = String(absCents % 100).padStart(2, "0");
+  return `${sign}${dollars}.${centsPart}`;
 }
 
 export default function ProfilePage() {
@@ -78,7 +88,7 @@ export default function ProfilePage() {
 
       {/* Balance + usage */}
       <div className="stats" style={{ border: "1px solid var(--ink)", marginBottom: 16 }}>
-        <div className="stat"><div className="num">${me.balance_usd.replace(/0+$/, "").replace(/\.$/, ".00")}</div><div className="lbl">Credit balance</div></div>
+        <div className="stat"><div className="num">${formatUsdMicros(me.balance_micros)}</div><div className="lbl">Credit balance</div></div>
         <div className="stat"><div className="num">{me.usage.calls}</div><div className="lbl">Tool calls</div></div>
         <div className="stat"><div className="num">${me.usage.spent_usd}</div><div className="lbl">Total spent</div></div>
       </div>

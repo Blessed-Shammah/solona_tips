@@ -24,8 +24,9 @@ These are the difference between a demo and a product that holds real money.
 - [ ] **Real signup/auth.** Today `/api/accounts` issues keys openly and `upgrade` is a free toggle.
       Add: email/wallet sign-in, key rotation, and gate Pro behind an actual paid subscription
       (charge through the spine). *(Owner: `spine-architect` + `payment-adapter-engineer`.)*
-- [ ] **Mainnet dry-run.** Flip to mainnet + a paid RPC, then push **one real USDC payment** through
-      a link AND one through a tool top-up. Confirm settle + credit + exactly-once on real funds.
+- [ ] **Mainnet dry-run.** Follow the checklist in `DEPLOY.md`: flip to mainnet + a paid RPC, then
+      push **one real USDC payment** through a link AND one through a tool top-up. Confirm settle,
+      credit, refund handling, and exactly-once behavior on real funds.
 - [ ] **Rate limiting & abuse.** Per-key + per-IP limits on `/api/tools/*/invoke` and account
       creation (agents can hammer; bots will probe). Add a WAF/Cloudflare in front.
 - [ ] **Secrets & ops.** Strong `ADMIN_SECRET`; secrets in the host's secret store (never in git);

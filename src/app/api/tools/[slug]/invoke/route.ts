@@ -26,7 +26,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ slug: string }
   maybeSweep();
   const apiKey = req.headers.get("authorization")?.replace(/^Bearer /, "") || req.headers.get("x-api-key") || "";
   const rlKey = `invoke:${apiKey || clientIp(req)}`;
-  const rl = rateLimit(rlKey, 120, 60_000); // 120 calls/min
+  const rl = await rateLimit(rlKey, 120, 60_000); // 120 calls/min
   if (!rl.allowed) {
     return NextResponse.json(
       { error: "rate_limited", retry_after_sec: rl.retryAfterSec },

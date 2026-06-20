@@ -7,7 +7,7 @@ import { rateLimit, clientIp, maybeSweep } from "@/lib/spine/ratelimit";
 export async function POST(req: Request) {
   // Abuse guard: cap new accounts per IP (bots probe signup endpoints).
   maybeSweep();
-  const rl = rateLimit(`signup:${clientIp(req)}`, 10, 60 * 60_000); // 10/hour
+  const rl = await rateLimit(`signup:${clientIp(req)}`, 10, 60 * 60_000); // 10/hour
   if (!rl.allowed) {
     return NextResponse.json({ error: "rate_limited", retry_after_sec: rl.retryAfterSec }, { status: 429 });
   }

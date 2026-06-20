@@ -6,7 +6,7 @@ import { rateLimit, clientIp, maybeSweep } from "@/lib/spine/ratelimit";
 
 export async function POST(req: Request) {
   maybeSweep();
-  if (!rateLimit(`signup:${clientIp(req)}`, 10, 60 * 60_000).allowed) {
+  if (!(await rateLimit(`signup:${clientIp(req)}`, 10, 60 * 60_000)).allowed) {
     return NextResponse.json({ error: "Too many attempts — try again later." }, { status: 429 });
   }
 

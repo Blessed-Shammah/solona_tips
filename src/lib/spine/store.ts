@@ -245,24 +245,42 @@ export function listContactMessages(limit = 100): ContactMessage[] {
   return db.prepare(`SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT ?`).all(limit) as ContactMessage[];
 }
 
+export function countContactMessages(): number {
+  return (db.prepare(`SELECT COUNT(*) AS count FROM contact_messages`).get() as { count: number }).count;
+}
+
 // ── Refunds ───────────────────────────────────────────────────────────────────
 export interface RefundDuePayment {
   payment_id: number;
   invoice_id: string;
   tx_signature: string;
   amount_base_units: string;
+  status: string;
+  is_extra: boolean;
 }
 
-/** Payments flagged refund_due that don't yet have a refund record. */
+/** Payments flagged refund_due that have no active refund record, or whose previous attempt failed. */
 export function listRefundDuePayments(): RefundDuePayment[] {
-  return db
+  const rows = db
     .prepare(
-      `SELECT p.id AS payment_id, p.invoice_id, p.tx_signature, p.amount_base_units
-       FROM payments p WHERE p.refund_due = 1
-         AND p.id NOT IN (SELECT payment_id FROM refunds)
+      `SELECT
+         p.id AS payment_id,
+         p.invoice_id,
+         p.tx_signature,
+         p.amount_base_units,
+         p.status,
+         EXISTS (
+           SELECT 1 FROM payments prior
+           WHERE prior.invoice_id = p.invoice_id AND prior.id < p.id
+         ) AS is_extra
+       FROM payments p
+       LEFT JOIN refunds r ON r.payment_id = p.id
+       WHERE p.refund_due = 1
+         AND (r.id IS NULL OR r.status = 'failed')
        ORDER BY p.created_at ASC`,
     )
-    .all() as RefundDuePayment[];
+    .all() as Array<Omit<RefundDuePayment, "is_extra"> & { is_extra: 0 | 1 }>;
+  return rows.map((r) => ({ ...r, is_extra: !!r.is_extra }));
 }
 
 /** Record a refund exactly-once (unique on payment_id) and clear the payment's refund_due flag. */
@@ -281,6 +299,55 @@ export const recordRefundOnce = db.transaction(
     return true;
   },
 );
+
+export interface RefundAttempt {
+  id: string;
+  started: boolean;
+  status: string;
+}
+
+/**
+ * Reserve a refund row before any live payout is sent. The UNIQUE(payment_id) constraint is the
+ * exactly-once gate; failed attempts may be retried by moving the same row back to pending.
+ */
+export const beginRefundAttempt = db.transaction(
+  (paymentId: number, invoiceId: string, amountMicros: number, toAddress: string | null): RefundAttempt => {
+    const existing = db.prepare(`SELECT id, status FROM refunds WHERE payment_id = ?`).get(paymentId) as
+      | { id: string; status: string }
+      | undefined;
+    if (existing && existing.status !== "failed") return { id: existing.id, status: existing.status, started: false };
+
+    if (existing) {
+      db.prepare(
+        `UPDATE refunds
+         SET invoice_id = ?, amount_micros = ?, to_address = ?, status = 'pending', tx_signature = NULL
+         WHERE id = ?`,
+      ).run(invoiceId, amountMicros, toAddress, existing.id);
+      return { id: existing.id, status: "pending", started: true };
+    }
+
+    const id = randomUUID();
+    db.prepare(
+      `INSERT INTO refunds (id, payment_id, invoice_id, amount_micros, to_address, status, tx_signature, created_at)
+       VALUES (?, ?, ?, ?, ?, 'pending', NULL, ?)`,
+    ).run(id, paymentId, invoiceId, amountMicros, toAddress, Date.now());
+    return { id, status: "pending", started: true };
+  },
+);
+
+export const markRefundSent = db.transaction((refundId: string, paymentId: number, txSignature: string): void => {
+  db.prepare(`UPDATE refunds SET status = 'sent', tx_signature = ? WHERE id = ?`).run(txSignature, refundId);
+  db.prepare(`UPDATE payments SET refund_due = 0 WHERE id = ?`).run(paymentId);
+});
+
+export const markRefundManualRequired = db.transaction((refundId: string, paymentId: number): void => {
+  db.prepare(`UPDATE refunds SET status = 'manual_required' WHERE id = ?`).run(refundId);
+  db.prepare(`UPDATE payments SET refund_due = 0 WHERE id = ?`).run(paymentId);
+});
+
+export function markRefundFailed(refundId: string): void {
+  db.prepare(`UPDATE refunds SET status = 'failed' WHERE id = ?`).run(refundId);
+}
 
 export interface Refund {
   id: string;

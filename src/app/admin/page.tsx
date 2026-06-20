@@ -6,7 +6,8 @@ interface Overview {
   accounts: { id: string; name: string; email: string | null; plan: string; balance_usd: string }[];
   invoices: { id: string; rail: string; amount: string; status: string; at: number }[];
   refunds: { id: string; amount_usd: string; to: string | null; status: string }[];
-  contact: { name: string; email: string; subject: string; message: string; at: number }[];
+  contactTotal: number;
+  contact: { id: string; name: string; email: string; subject: string; message: string; at: number }[];
 }
 
 const SECRET_KEY = "soltip_admin_secret";
@@ -108,9 +109,9 @@ export default function AdminPage() {
         ))}
       </Section>
 
-      <Section title="Contact messages">
-        {data.contact.length === 0 ? <p className="muted">None.</p> : data.contact.map((c, i) => (
-          <div className="kv" key={i} style={{ flexDirection: "column", alignItems: "stretch", gap: 4 }}>
+      <Section title={`Contact messages (${data.contactTotal})`}>
+        {data.contact.length === 0 ? <p className="muted">None.</p> : data.contact.map((c) => (
+          <div className="kv" key={c.id} style={{ flexDirection: "column", alignItems: "stretch", gap: 4 }}>
             <span>{c.name} &lt;{c.email}&gt; — {c.subject || "(no subject)"}</span>
             <span style={{ color: "var(--muted)", fontSize: 13 }}>{c.message}</span>
           </div>

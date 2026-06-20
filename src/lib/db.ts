@@ -133,17 +133,18 @@ export type CreditOutcome = "credited_first" | "credited_extra" | "duplicate";
 /**
  * Insert a payment, guarded by the UNIQUE(invoice_id, tx_signature) index.
  * Returns "duplicate" for replays (handled silently → exactly-once holds),
- * "credited_first" for the first valid transfer, "credited_extra" for a genuine double-pay
- * (a second distinct signature → flagged refund_due, see reconciliation.md double-pay handling).
+ * "credited_first" for the first valid transfer, "credited_extra" for a genuine double-pay.
+ * Overpays and extra payments are flagged refund_due so the excess is never silently kept.
  */
 export function creditOnce(invoiceId: string, signature: string, amountBaseUnits: bigint, status: string): CreditOutcome {
   const existing = db.prepare(`SELECT COUNT(*) AS n FROM payments WHERE invoice_id = ?`).get(invoiceId) as { n: number };
   const isExtra = existing.n > 0;
+  const refundDue = isExtra || status === "overpaid";
   try {
     db.prepare(
       `INSERT INTO payments (invoice_id, tx_signature, amount_base_units, status, refund_due, created_at)
        VALUES (?, ?, ?, ?, ?, ?)`,
-    ).run(invoiceId, signature, amountBaseUnits.toString(), status, isExtra ? 1 : 0, Date.now());
+    ).run(invoiceId, signature, amountBaseUnits.toString(), status, refundDue ? 1 : 0, Date.now());
   } catch (e: unknown) {
     if (e && typeof e === "object" && "code" in e && (e as { code: string }).code === "SQLITE_CONSTRAINT_UNIQUE") {
       return "duplicate"; // replay — already credited

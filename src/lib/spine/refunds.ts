@@ -1,17 +1,18 @@
-// refunds.ts — surface and record refunds owed (overpay / double-pay flagged by reconciliation).
-// Records each refund EXACTLY ONCE and resolves the payer address on-chain so it can be paid back.
-//
-// Live on-chain payout requires a merchant signing key (MERCHANT_SECRET_KEY) — the only part of the
-// system that isn't purely non-custodial. Until that's wired, refunds are recorded as
-// `manual_required` with the resolved payer + amount, ready for an operator (or the admin UI) to send.
+// refunds.ts — execute or surface refunds owed (overpay / double-pay flagged by reconciliation).
+// Live token payouts are guarded by a DB refund attempt row before signing, then completed with the
+// on-chain tx signature. Without a signer, payer, or token rail, the row stays manual_required.
 import { signature as toSignature } from "@solana/kit";
 import { rpc } from "../solana";
-import { getInvoice } from "../db";
-import { listRefundDuePayments, recordRefundOnce, type RefundDuePayment } from "./store";
-
-export function refundSignerEnabled(): boolean {
-  return !!process.env.MERCHANT_SECRET_KEY;
-}
+import { getInvoice, type Invoice } from "../db";
+import {
+  beginRefundAttempt,
+  listRefundDuePayments,
+  markRefundFailed,
+  markRefundManualRequired,
+  markRefundSent,
+  type RefundDuePayment,
+} from "./store";
+import { refundSignerEnabled, sendTokenRefund } from "./refund-payout";
 
 /** Best-effort: find who paid (the token account owner whose balance decreased) from the tx. */
 export async function resolvePayer(signature: string, merchant: string, mint: string): Promise<string | null> {
@@ -37,19 +38,59 @@ export async function resolvePayer(signature: string, merchant: string, mint: st
 export interface RefundProcessResult {
   due: number;
   recorded: number;
+  sent: number;
+  manualRequired: number;
+  failed: number;
   signerEnabled: boolean;
 }
 
 export async function processRefunds(merchant: string): Promise<RefundProcessResult> {
   const due: RefundDuePayment[] = listRefundDuePayments();
   let recorded = 0;
+  let sent = 0;
+  let manualRequired = 0;
+  let failed = 0;
+  const signerEnabled = refundSignerEnabled();
   for (const p of due) {
     const inv = getInvoice(p.invoice_id);
+    if (!inv) continue;
+    const refundBaseUnits = refundBaseUnitsForPayment(p, inv);
+    if (refundBaseUnits <= 0n) continue;
     const decimals = inv?.decimals ?? 6;
-    const micros = Number((BigInt(p.amount_base_units) * 1_000_000n) / 10n ** BigInt(decimals));
+    const micros = Number((refundBaseUnits * 1_000_000n) / 10n ** BigInt(decimals));
     const payer = inv && !inv.is_native ? await resolvePayer(p.tx_signature, merchant, inv.mint) : null;
-    // Status stays manual_required until a signer-based payout is wired + verified with a funded key.
-    if (recordRefundOnce(p.payment_id, p.invoice_id, micros, payer, "manual_required", null)) recorded++;
+    const attempt = beginRefundAttempt(p.payment_id, p.invoice_id, micros, payer);
+    if (!attempt.started) continue;
+    recorded++;
+
+    if (!signerEnabled || !payer || inv.is_native) {
+      markRefundManualRequired(attempt.id, p.payment_id);
+      manualRequired++;
+      continue;
+    }
+
+    try {
+      const txSig = await sendTokenRefund({
+        merchantAddress: merchant,
+        payerAddress: payer,
+        mint: inv.mint,
+        tokenProgram: inv.token_program,
+        amountBaseUnits: refundBaseUnits,
+        decimals: inv.decimals,
+      });
+      markRefundSent(attempt.id, p.payment_id, txSig);
+      sent++;
+    } catch {
+      markRefundFailed(attempt.id);
+      failed++;
+    }
   }
-  return { due: due.length, recorded, signerEnabled: refundSignerEnabled() };
+  return { due: due.length, recorded, sent, manualRequired, failed, signerEnabled };
+}
+
+function refundBaseUnitsForPayment(payment: RefundDuePayment, invoice: Invoice): bigint {
+  const received = BigInt(payment.amount_base_units);
+  if (payment.is_extra) return received;
+  if (payment.status === "overpaid") return received - BigInt(invoice.amount_base_units);
+  return received;
 }

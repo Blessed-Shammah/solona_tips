@@ -1,5 +1,5 @@
-// Solana RPC client (read-only). This app NEVER signs — it only watches the chain to confirm
-// that funds landed in the merchant wallet (Safety Law #7: non-custodial, no private keys).
+// Solana RPC client. Normal settlement is read-only; live refunds sign only inside the
+// MERCHANT_SECRET_KEY-backed refund payout adapter (Safety Law #7: no keys in code/logs).
 import { createSolanaRpc, address, type Address } from "@solana/kit";
 import { config } from "./config";
 

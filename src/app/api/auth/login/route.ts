@@ -7,7 +7,7 @@ import { rateLimit, clientIp, maybeSweep } from "@/lib/spine/ratelimit";
 export async function POST(req: Request) {
   maybeSweep();
   // Tighter limit on login to slow credential stuffing.
-  if (!rateLimit(`login:${clientIp(req)}`, 12, 15 * 60_000).allowed) {
+  if (!(await rateLimit(`login:${clientIp(req)}`, 12, 15 * 60_000)).allowed) {
     return NextResponse.json({ error: "Too many attempts — try again shortly." }, { status: 429 });
   }
 

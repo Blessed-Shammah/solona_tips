@@ -8,7 +8,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: Request) {
   maybeSweep();
-  const rl = rateLimit(`contact:${clientIp(req)}`, 5, 60 * 60_000); // 5/hour per IP
+  const rl = await rateLimit(`contact:${clientIp(req)}`, 5, 60 * 60_000); // 5/hour per IP
   if (!rl.allowed) {
     return NextResponse.json({ error: "Too many messages — try again later." }, { status: 429 });
   }

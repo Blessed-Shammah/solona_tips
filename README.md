@@ -37,7 +37,7 @@ A wallet saying **"sent" is not "paid"** — only the server's on-chain verifica
 | #4 "Paid" = confirmed + verified | commitment chosen by value; balance-delta check, not a library helper |
 | #5 Exactly-once crediting | `UNIQUE(invoice_id, tx_signature)` index in SQLite |
 | #6 Reconciliation > webhooks | `/api/reconcile` cron poller (Track B) backs the fast client poll (Track A) |
-| #7 No private keys | the app **never signs** — read-only RPC only |
+| #7 No private keys | normal settlement is read-only; optional live refunds sign only from env-injected `MERCHANT_SECRET_KEY` |
 | #8 Under/over-payment policy | classified explicitly; overpay/double-pay flagged `refund_due`, never silently kept |
 | #9 Fresh unique reference | one generated keypair pubkey per invoice |
 
@@ -182,6 +182,8 @@ See [`.env.example`](./.env.example). Key vars:
 - `RPC_URL` — RPC endpoint (paid provider recommended for mainnet)
 - `MERCHANT_ADDRESS` — **your** wallet (public key) where funds land
 - `ADMIN_SECRET` — protects link creation + the reconcile endpoint (set this on any public deploy)
+- `MERCHANT_SECRET_KEY` — optional; enables live token refunds from the merchant wallet. If unset,
+  refund rows are recorded as `manual_required`.
 
 ## What's verified vs. not
 
