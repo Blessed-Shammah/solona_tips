@@ -105,7 +105,7 @@ export const BUILTIN_TOOLS: ToolSpec[] = [
     slug: "fintech-growth-audit",
     name: "Fintech Growth Audit Pack",
     description: "Turn a fintech paid-growth brief into a UGC ad scope, mobile funnel audit plan, and client-ready response.",
-    priceMicros: 1_500_000, // $1.50
+    priceMicros: 29_000_000, // $29
     input: {
       brief: "string (client/project post)",
       product: "string (optional)",
@@ -163,6 +163,260 @@ export const BUILTIN_TOOLS: ToolSpec[] = [
       };
     },
   },
+  {
+    slug: "shopify-payout-ugc-revamp",
+    name: "Shopify Payout UGC Revamp",
+    description: "Scope 3-4 UGC-style ad concepts and a mobile funnel fix list for Shopify merchant payout tools.",
+    priceMicros: 49_000_000, // $49
+    input: {
+      brief: "string (project post or client request)",
+      product: "string (optional)",
+      offer: "string (optional)",
+      current_ads: "string (optional notes on current creatives)",
+      proof_url: "string (optional sample/case study URL)",
+    },
+    async handler(input) {
+      const brief = str(input, "brief");
+      if (brief.length < 40) throw new Error("brief must include the merchant, offer, channel, and desired result");
+      const product = optionalStr(input, "product") || inferProduct(brief);
+      const offer = optionalStr(input, "offer") || "faster, clearer merchant payouts";
+      const currentAds = optionalStr(input, "current_ads") || "current creative performance not provided";
+      const proofUrl = optionalStr(input, "proof_url");
+
+      return {
+        product,
+        recommended_listing: "Shopify fintech UGC creative revamp",
+        price_anchor: "$2k-$3k human project; $49 automated scope pack",
+        fit_score: scoreFit(brief, ["shopify", "merchant", "payout", "meta", "ugc"]),
+        creative_angles: [
+          `Before/after cash-flow story: merchant goes from payout uncertainty to ${offer}.`,
+          "Founder-style trust proof: show the dashboard, settlement timing, and a real workflow without hype.",
+          "Operator pain hook: inventory, payroll, and ad spend decisions blocked by slow payout visibility.",
+          "Side-by-side competitor friction: old payout process versus the automated flow.",
+        ],
+        script_pack: [
+          buildScript("Cash-flow crunch", "I sold out this weekend, but the payout timing still decides what I can restock.", offer),
+          buildScript("Dashboard proof", "Here is the payout view I wish Shopify merchants had from day one.", offer),
+          buildScript("Operator checklist", "If your store is scaling, watch these three payout bottlenecks.", offer),
+          buildScript("Objection handler", "This is not a loan pitch. It is payout visibility your finance workflow can actually use.", offer),
+        ],
+        funnel_fixes: [
+          "Put the payout outcome above the fold before product mechanics.",
+          "Move trust proof, supported rails, and security language before the first signup CTA.",
+          "Add a mobile screenshot strip showing the exact merchant workflow.",
+          "Track ad click -> signup -> connection start -> activation, not just page visits.",
+        ],
+        intake_questions: [
+          "Which merchant segment is highest value: solo operators, agencies, or high-volume stores?",
+          "What is the current Meta CPA by creative concept?",
+          "Which payout claim is legally approved and provable?",
+          "Can the landing page show real product screens?",
+        ],
+        current_ads: currentAds,
+        response_template: `I can scope the UGC revamp around ${product}: 3-4 scripts, creator shot notes, and mobile funnel fixes tied to ${offer}. ${proofUrl ? `Sample: ${proofUrl}` : "I can attach one relevant fintech sample before kickoff."}`,
+      };
+    },
+  },
+  {
+    slug: "tiktok-fintech-scale-audit",
+    name: "TikTok Fintech Scale Audit",
+    description: "Diagnose volatile TikTok acquisition for fintech apps and return a creative, landing-page, and event plan.",
+    priceMicros: 69_000_000, // $69
+    input: {
+      brief: "string (project post or growth problem)",
+      metrics: "string (optional CPA/CAC/CVR notes)",
+      landing_page: "string (optional URL or notes)",
+      deadline: "string (optional)",
+      proof_url: "string (optional sample/case study URL)",
+    },
+    async handler(input) {
+      const brief = str(input, "brief");
+      if (brief.length < 40) throw new Error("brief must include the app, channel, problem, and target outcome");
+      const metrics = optionalStr(input, "metrics") || "metrics not provided";
+      const landingPage = optionalStr(input, "landing_page") || "landing page not provided";
+      const deadline = optionalStr(input, "deadline") || inferDeadline(brief);
+      const proofUrl = optionalStr(input, "proof_url");
+
+      return {
+        recommended_listing: "TikTok fintech creative + mobile signup audit",
+        price_anchor: "$3k-$5k human project; $69 automated audit pack",
+        fit_score: scoreFit(brief, ["tiktok", "fintech", "signup", "mobile", "yc"]),
+        diagnosis: [
+          "TikTok instability usually points to hook fatigue, weak native proof, or event mismatch before media-buying issues.",
+          "Fintech signup flows need trust and clarity earlier than entertainment or ecommerce flows.",
+          "If the optimized event is too shallow, TikTok may find cheap curiosity instead of qualified users.",
+        ],
+        test_matrix: [
+          { lane: "Hook", variants: ["money moment", "pain confession", "dashboard proof", "myth correction"] },
+          { lane: "Format", variants: ["founder face", "screen recording", "street-style question", "duet/reaction"] },
+          { lane: "Offer", variants: ["speed", "control", "risk reduction", "workflow saved"] },
+        ],
+        mobile_funnel_fixes: [
+          "Reduce first-screen copy to one outcome, one trust proof, one CTA.",
+          "Push compliance and security reassurance close to the first form interaction.",
+          "Make the signup CTA persistent after the first scroll on mobile.",
+          "Instrument signup start, KYC start, activation, and qualified lead separately.",
+        ],
+        requested_inputs: [
+          "Top five TikTok ads by spend with hook, CPA, hold rate, and signup conversion.",
+          "Current landing page screenshots on mobile.",
+          "Event mapping from TikTok Ads Manager to backend activation.",
+        ],
+        metrics,
+        landing_page: landingPage,
+        response_template: `I can audit the TikTok side for the next ${deadline}: creative angles, mobile signup friction, and event quality. ${proofUrl ? `Case study/sample: ${proofUrl}` : "I can share a fintech growth sample before the call."}`,
+      };
+    },
+  },
+  {
+    slug: "salesforce-revops-cleanup",
+    name: "Salesforce RevOps Cleanup Pack",
+    description: "Turn messy Salesforce pipeline notes into fields, automations, dashboards, and a 30/90-day cleanup plan.",
+    priceMicros: 59_000_000, // $59
+    input: {
+      pipeline_notes: "string (current Salesforce pain, objects, reports, handoffs)",
+      crm_object: "string (Lead, Opportunity, Account, Case, optional)",
+      team_size: "string (optional)",
+      target_metric: "string (optional)",
+    },
+    async handler(input) {
+      const notes = str(input, "pipeline_notes");
+      if (notes.length < 40) throw new Error("pipeline_notes must describe the Salesforce workflow and pain points");
+      const objectName = optionalStr(input, "crm_object") || inferCrmObject(notes);
+      const teamSize = optionalStr(input, "team_size") || "team size not specified";
+      const targetMetric = optionalStr(input, "target_metric") || "pipeline hygiene and conversion visibility";
+
+      return {
+        recommended_listing: "Salesforce pipeline cleanup and automation scope",
+        price_anchor: "$3k-$8k implementation discovery; $59 automated RevOps pack",
+        object: objectName,
+        team_size: teamSize,
+        target_metric: targetMetric,
+        quick_wins: [
+          `Define required ${objectName} fields only at the stage where they become operationally necessary.`,
+          "Create one stale-record view per owner before adding automation.",
+          "Separate source-of-truth fields from temporary sales notes.",
+          "Add validation rules after reporting gaps are visible, not before.",
+        ],
+        field_map: [
+          `${objectName}.Lifecycle_Status`,
+          `${objectName}.Next_Action_Date`,
+          `${objectName}.Source_Detail`,
+          `${objectName}.Disqualification_Reason`,
+          `${objectName}.Implementation_Risk`,
+        ],
+        automation_plan: [
+          "Day 0-7: normalize statuses, owners, and required fields.",
+          "Day 8-30: add assignment, stale-record, and handoff automations.",
+          "Day 31-90: add forecast dashboards, SLA alerts, and lifecycle QA.",
+        ],
+        dashboard_cards: [
+          "Stage conversion by owner",
+          "Aging pipeline by next action",
+          "Lead source quality",
+          "Forecast risk by close date",
+        ],
+        risks: [
+          "Over-automating a messy process locks in the mess.",
+          "Validation rules can reduce adoption if reps do not understand the operational reason.",
+          "Dashboards are only useful after stage definitions are stable.",
+        ],
+      };
+    },
+  },
+  {
+    slug: "formula-ops-builder",
+    name: "Formula Ops Builder",
+    description: "Convert spreadsheet chaos into formulas, validation rules, and a path from sheet to automation.",
+    priceMicros: 19_000_000, // $19
+    input: {
+      sheet_goal: "string (what the sheet should calculate or control)",
+      columns: "string (optional column names or sample row)",
+      platform: "string (Google Sheets, Excel, Airtable, optional)",
+      automation_goal: "string (optional)",
+    },
+    async handler(input) {
+      const goal = str(input, "sheet_goal");
+      if (goal.length < 25) throw new Error("sheet_goal must describe the workflow and calculation needed");
+      const columns = optionalStr(input, "columns") || "columns not provided";
+      const platform = optionalStr(input, "platform") || inferSheetPlatform(goal);
+      const automationGoal = optionalStr(input, "automation_goal") || "reduce manual weekly updates";
+
+      return {
+        platform,
+        recommended_listing: "Spreadsheet formula and automation build spec",
+        price_anchor: "$500-$2k ops build; $19 automated formula spec",
+        model: [
+          "Inputs: raw data pasted or synced into one locked tab.",
+          "Logic: helper columns calculate status, exception, priority, and owner.",
+          "Output: operator dashboard with only decisions and actions.",
+        ],
+        formula_blueprints: [
+          { purpose: "status classification", formula: '=IFS(ISBLANK([Next Action]),"Needs action",[Due Date]<TODAY(),"Overdue",TRUE,"On track")' },
+          { purpose: "owner workload", formula: "=QUERY(A:Z,\"select Owner,count(ID) where Status <> 'Done' group by Owner\",1)" },
+          { purpose: "priority score", formula: '=ROUND((Revenue*0.5)+(Urgency*0.3)+(Risk*0.2),2)' },
+          { purpose: "exception list", formula: '=FILTER(A:Z,(Status="Overdue")+(Risk>=4))' },
+        ],
+        validation_rules: [
+          "Use dropdowns for status, owner, source, and risk.",
+          "Protect formula columns and expose only input fields.",
+          "Add conditional formatting for overdue, missing owner, and high-value exceptions.",
+        ],
+        automation_path: [
+          `Quick: build formulas and validation in ${platform}.`,
+          "Next: add scheduled import/export or Zapier/Make handoff.",
+          `Long term: move recurring decisions into a small internal tool once ${automationGoal} is stable.`,
+        ],
+        columns,
+      };
+    },
+  },
+  {
+    slug: "creator-adaptation-radar",
+    name: "Creator Adaptation Radar",
+    description: "Turn creator, YouTube, or founder notes into quick experiments and a long-term adaptation roadmap.",
+    priceMicros: 39_000_000, // $39
+    input: {
+      niche: "string (audience or market)",
+      notes: "string (video notes, transcript, comments, or trend observations)",
+      platform: "string (YouTube, TikTok, LinkedIn, optional)",
+      horizon: "string (optional: 7 days, 30 days, 90 days)",
+    },
+    async handler(input) {
+      const niche = str(input, "niche");
+      const notes = str(input, "notes");
+      if (notes.length < 40) throw new Error("notes must include the signals, videos, comments, or market shifts to adapt");
+      const platform = optionalStr(input, "platform") || "YouTube and short-form video";
+      const horizon = optionalStr(input, "horizon") || "7/30/90 days";
+
+      return {
+        recommended_listing: "Creator-market adaptation brief",
+        price_anchor: "$1k-$4k content strategy sprint; $39 automated adaptation radar",
+        niche,
+        platform,
+        horizon,
+        quick_experiments: [
+          "Rewrite one high-performing idea for a beginner, operator, and skeptic audience.",
+          "Convert the strongest comment objection into a short-form hook.",
+          "Ship one proof-led post: screen, number, teardown, or before/after workflow.",
+          "Test a title that names the painful transition, not the generic topic.",
+        ],
+        long_term_moves: [
+          "Build a repeatable content operating system: signal capture, angle bank, script, publish, measure.",
+          "Turn recurring audience questions into productized tools or lead magnets.",
+          "Create a quarterly adaptation memo: what changed, what to ignore, what to test.",
+          "Move winning posts into evergreen landing-page proof and sales enablement.",
+        ],
+        signal_map: extractSignals(notes),
+        output_formats: [
+          "7-day experiment board",
+          "30-day content and offer map",
+          "90-day productized tool roadmap",
+        ],
+        caution: "This tool uses the notes you provide; it does not scrape live platforms or guarantee current platform trends.",
+      };
+    },
+  },
 ];
 
 function inferProduct(brief: string): string {
@@ -189,6 +443,50 @@ function inferDeadline(brief: string): string {
   if (s.includes("2 weeks") || s.includes("two weeks")) return "2 weeks";
   if (s.includes("4-week") || s.includes("4 week") || s.includes("four week")) return "4 weeks";
   return "next campaign cycle";
+}
+
+function buildScript(angle: string, hook: string, offer: string): Record<string, unknown> {
+  return {
+    angle,
+    hook,
+    body: [
+      "Show the current manual or confusing workflow in the first three seconds.",
+      `Name the change: ${offer}.`,
+      "Cut to proof: dashboard, metric, or customer workflow.",
+      "Close with one action: audit, demo, signup, or reply.",
+    ],
+    shot_notes: ["phone-first framing", "real screen capture", "caption every claim", "avoid stock footage"],
+  };
+}
+
+function scoreFit(text: string, terms: string[]): number {
+  const s = text.toLowerCase();
+  const hits = terms.filter((term) => s.includes(term)).length;
+  return Math.min(100, 55 + hits * 9);
+}
+
+function inferCrmObject(notes: string): string {
+  const s = notes.toLowerCase();
+  if (s.includes("case") || s.includes("support")) return "Case";
+  if (s.includes("account")) return "Account";
+  if (s.includes("lead")) return "Lead";
+  return "Opportunity";
+}
+
+function inferSheetPlatform(goal: string): string {
+  const s = goal.toLowerCase();
+  if (s.includes("excel")) return "Excel";
+  if (s.includes("airtable")) return "Airtable";
+  return "Google Sheets";
+}
+
+function extractSignals(notes: string): string[] {
+  const cleaned = notes
+    .split(/\n|\.|;|-/)
+    .map((part) => part.trim())
+    .filter((part) => part.length > 10)
+    .slice(0, 6);
+  return cleaned.length ? cleaned : [notes.slice(0, 160)];
 }
 
 function hasAiKey(): boolean {

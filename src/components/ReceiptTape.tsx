@@ -4,12 +4,12 @@
 import { useEffect, useRef } from "react";
 
 const TAPE = [
-  { id: "0x9A…41", tool: "Claude Opus 4.8", amt: "0.0120" },
-  { id: "0x2F…8B", tool: "Deepgram ASR", amt: "0.0004" },
-  { id: "0x1C…99", tool: "QR Generator", amt: "0.0020" },
-  { id: "0x7E…2A", tool: "AI Summarizer", amt: "0.0100" },
-  { id: "0x3D…11", tool: "SHA-256 Hash", amt: "0.0005" },
-  { id: "0x5B…74", tool: "UUID Generator", amt: "0.0010" },
+  { id: "0x9A…41", tool: "TikTok Fintech Scale Audit", amt: "69.0000" },
+  { id: "0x2F…8B", tool: "Shopify Payout UGC Revamp", amt: "49.0000" },
+  { id: "0x1C…99", tool: "Salesforce RevOps Cleanup", amt: "59.0000" },
+  { id: "0x7E…2A", tool: "Creator Adaptation Radar", amt: "39.0000" },
+  { id: "0x3D…11", tool: "Fintech Growth Audit", amt: "29.0000" },
+  { id: "0x5B…74", tool: "Formula Ops Builder", amt: "19.0000" },
 ];
 
 export default function ReceiptTape() {

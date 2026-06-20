@@ -9,13 +9,13 @@ export default function SiteFooter() {
         <div className="nav-links">
           <Link href="/developers">Developers</Link>
           <Link href="/products">Products</Link>
-          <Link href="/profile">Profile</Link>
           <Link href="/docs">Docs</Link>
           <Link href="/pricing">Pricing</Link>
           <Link href="/blog">Blog</Link>
           <Link href="/contact">Contact</Link>
           <Link href="/terms">Terms</Link>
           <Link href="/privacy">Privacy</Link>
+          <Link href="/profile">Profile</Link>
         </div>
       </div>
     </footer>

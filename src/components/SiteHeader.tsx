@@ -3,10 +3,9 @@
 import Link from "next/link";
 import { useState } from "react";
 
-const LINKS: [string, string][] = [
-  ["/developers", "Developers"],
+const PRIMARY_LINKS: [string, string][] = [
   ["/products", "Products"],
-  ["/profile", "Profile"],
+  ["/developers", "Developers"],
   ["/docs", "Docs"],
   ["/pricing", "Pricing"],
   ["/blog", "Blog"],
@@ -22,8 +21,11 @@ export default function SiteHeader() {
           SolTip<span className="dot">.</span>
         </Link>
         <div className="nav-links desktop">
-          {LINKS.map(([href, label]) => <Link key={href} href={href}>{label}</Link>)}
+          {PRIMARY_LINKS.map(([href, label]) => <Link key={href} href={href}>{label}</Link>)}
           <Link href="/developers" className="nav-cta">Start building</Link>
+          <Link href="/profile" className="nav-profile" aria-label="Profile">
+            <span className="nav-avatar" aria-hidden="true">P</span>
+          </Link>
         </div>
         <button className="nav-burger" aria-label="Toggle menu" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
           {open ? "✕" : "☰"}
@@ -31,10 +33,14 @@ export default function SiteHeader() {
       </div>
       {open && (
         <div className="nav-mobile">
-          {LINKS.map(([href, label]) => (
+          {PRIMARY_LINKS.map(([href, label]) => (
             <Link key={href} href={href} onClick={() => setOpen(false)}>{label}</Link>
           ))}
           <Link href="/developers" className="nav-cta" onClick={() => setOpen(false)}>Start building</Link>
+          <Link href="/profile" className="nav-profile mobile" onClick={() => setOpen(false)}>
+            <span className="nav-avatar" aria-hidden="true">P</span>
+            <span>Profile</span>
+          </Link>
         </div>
       )}
     </nav>
