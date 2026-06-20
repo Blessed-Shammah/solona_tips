@@ -95,7 +95,10 @@ function ProductCard({ tool }: { tool: ProductTool }) {
       </div>
       <div className="product-actions">
         <Link href="/developers"><button>Try in console</button></Link>
-        <code>{tool.invoke}</code>
+        <div className="product-endpoint">
+          <span>API</span>
+          <code>{tool.invoke}</code>
+        </div>
       </div>
     </article>
   );
