@@ -1,0 +1,13 @@
+{
+  "_comment": "Example MCP client config (Claude Desktop / Claude Code). Point your MCP client at the SolTip server. Set SOLTIP_API_KEY to a funded key from /developers, or omit it to get x402 payment challenges instead.",
+  "mcpServers": {
+    "soltip-tools": {
+      "command": "node",
+      "args": ["/absolute/path/to/solona_tips/mcp/server.mjs"],
+      "env": {
+        "SOLTIP_BASE_URL": "http://localhost:3000",
+        "SOLTIP_API_KEY": "sk_live_replace_with_a_funded_key"
+      }
+    }
+  }
+}

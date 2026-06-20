@@ -1,0 +1,42 @@
+# Fly.io deployment for SolTip. Ships the Dockerfile with a persistent volume for the SQLite ledger.
+#
+# First-time setup:
+#   fly launch --no-deploy            # or: fly apps create soltip
+#   fly volumes create soltip_data --size 1 --region iad
+#   fly secrets set MERCHANT_ADDRESS=... RPC_URL=... ADMIN_SECRET=... MERCHANT_LABEL="SolTip"
+#   fly deploy
+#
+app = "soltip"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  SOLANA_CLUSTER = "mainnet"          # set "devnet" while testing
+  DATABASE_PATH = "/app/data/soltip.db"
+  RECONCILE_INTERVAL_MS = "60000"
+  # MERCHANT_ADDRESS, RPC_URL, ADMIN_SECRET, MERCHANT_LABEL → set via `fly secrets set`
+
+# Persistent disk for the ledger — without this, payment history resets on each deploy.
+[mounts]
+  source = "soltip_data"
+  destination = "/app/data"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "suspend"      # keep one machine warm so the reconcile cron keeps running
+  auto_start_machines = true
+  min_machines_running = 1            # the internal reconcile cron needs a live instance
+
+  [http_service.checks]
+    [[http_service.checks.http]]
+      method = "GET"
+      path = "/api/health"
+      interval = "30s"
+      timeout = "4s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

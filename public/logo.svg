@@ -1,0 +1,26 @@
+<svg width="320" height="72" viewBox="0 0 320 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="8" y1="8" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#14F195"/>
+      <stop offset="1" stop-color="#9945FF"/>
+    </linearGradient>
+    <linearGradient id="arrow" x1="36" y1="22" x2="36" y2="50" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#14F195"/>
+      <stop offset="1" stop-color="#9945FF"/>
+    </linearGradient>
+    <linearGradient id="word" x1="84" y1="20" x2="300" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E7E9EE"/>
+      <stop offset="1" stop-color="#B9C0CF"/>
+    </linearGradient>
+  </defs>
+
+  <!-- mark -->
+  <rect x="8" y="8" width="56" height="56" rx="14" fill="url(#bg)"/>
+  <circle cx="36" cy="36" r="15" fill="#FFFFFF"/>
+  <path d="M36 46 V28 M28.5 35.5 L36 27 L43.5 35.5" stroke="url(#arrow)" stroke-width="4.4"
+        stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- wordmark -->
+  <text x="84" y="48" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+        font-size="34" font-weight="700" letter-spacing="-1" fill="url(#word)">Sol<tspan fill="#14F195">Tip</tspan></text>
+</svg>

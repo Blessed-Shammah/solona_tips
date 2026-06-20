@@ -1,0 +1,45 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  safety-property-tests:
+    # Runs the network-free reference tests that make rules/payments.md executable.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Run payment safety-property tests (no deps)
+        run: node --test 'examples/**/*.test.mjs'
+
+  skill-integrity:
+    # Cheap structural guards: every SKILL.md route resolves; no secret keys committed.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: SKILL.md routes resolve
+        run: |
+          set -e
+          test -f "skill/SKILL.md" || { echo "missing skill/SKILL.md"; exit 1; }
+          for f in rails solana-pay checkout subscriptions confirmation reconciliation \
+                   refunds-disputes onramp-offramp compliance treasury testing resources myths; do
+            test -f "skill/references/$f.md" || { echo "missing skill/references/$f.md"; exit 1; }
+          done
+          echo "all routes resolve"
+      - name: No committed private keys
+        run: |
+          if grep -rIlE '(-----BEGIN [A-Z ]*PRIVATE KEY|"secretKey"|\[[0-9]{1,3},){31,}' \
+               --exclude-dir=.git .; then
+            echo "possible private key material committed"; exit 1
+          fi
+          echo "no key material found"
+
+  # integration-mainnet-fork:
+  #   Enable on a self-hosted/credentialed runner. Runs the on-chain tests from
+  #   skill/testing.md against the REAL mints (USDC/USDG/PYUSD) on a Surfpool mainnet-fork —
+  #   the run that upgrades the skill from "source-verified" to "execution-verified".
+  #   Required to validate the SPL vs Token-2022 path (PYUSD) before a production launch.

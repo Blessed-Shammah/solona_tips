@@ -1,0 +1,19 @@
+services:
+  soltip:
+    build: .
+    image: soltip:latest
+    ports:
+      - "3000:3000"
+    # Provide your config (cluster, RPC_URL, MERCHANT_ADDRESS, ADMIN_SECRET…).
+    # Copy .env.example → .env and fill it in. DATABASE_PATH is fixed inside the
+    # container to /app/data/soltip.db (the mounted volume below) — leave it unset here.
+    env_file:
+      - .env
+    environment:
+      - DATABASE_PATH=/app/data/soltip.db
+    volumes:
+      - soltip-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  soltip-data:
