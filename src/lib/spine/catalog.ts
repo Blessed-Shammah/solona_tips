@@ -23,6 +23,11 @@ function str(input: Record<string, unknown>, key: string, fallback?: string): st
   throw new Error(`field "${key}" must be a string`);
 }
 
+function optionalStr(input: Record<string, unknown>, key: string): string {
+  const v = input[key];
+  return typeof v === "string" ? v.trim() : "";
+}
+
 export const BUILTIN_TOOLS: ToolSpec[] = [
   {
     slug: "uuid",
@@ -96,7 +101,95 @@ export const BUILTIN_TOOLS: ToolSpec[] = [
       return { bullets, summary: summary.trim() };
     },
   },
+  {
+    slug: "fintech-growth-audit",
+    name: "Fintech Growth Audit Pack",
+    description: "Turn a fintech paid-growth brief into a UGC ad scope, mobile funnel audit plan, and client-ready response.",
+    priceMicros: 1_500_000, // $1.50
+    input: {
+      brief: "string (client/project post)",
+      product: "string (optional)",
+      channel: "string (Meta, TikTok, paid social, optional)",
+      budget: "string (optional)",
+      deadline: "string (optional)",
+      proof_url: "string (optional sample/case study URL)",
+    },
+    async handler(input) {
+      const brief = str(input, "brief");
+      if (brief.length < 40) throw new Error("brief must include the product, channel, problem, and desired outcome");
+      const product = optionalStr(input, "product") || inferProduct(brief);
+      const channel = optionalStr(input, "channel") || inferChannel(brief);
+      const budget = optionalStr(input, "budget") || inferBudget(brief);
+      const deadline = optionalStr(input, "deadline") || inferDeadline(brief);
+      const proofUrl = optionalStr(input, "proof_url");
+
+      return {
+        fit: "strong_if_fintech_growth_experience_is_available",
+        product,
+        channel,
+        budget,
+        deadline,
+        recommended_listing: {
+          title: "Fintech UGC Creative + Mobile Funnel Audit",
+          billable_under_platform: true,
+          billing_model: "Charge the audit/strategy pack as a tool call or prepaid credit order; use a separate milestone workflow for full human production.",
+          suggested_price_usd: budget.includes("5k") || budget.includes("3-5") ? "3500-5000" : "2000-3000",
+        },
+        scope: [
+          "Audit current paid-social creatives, hook retention, offer clarity, and mobile signup path.",
+          "Rewrite 3-4 UGC-style ad scripts with fintech trust framing, compliance-safe claims, and creator shot notes.",
+          "Map mobile landing-page friction from ad click to signup or demo request.",
+          "Return a launch checklist with tracking, creative testing matrix, and first-week decision rules.",
+        ],
+        deliverables: [
+          "Creative audit scorecard",
+          "3-4 UGC video scripts",
+          "Mobile funnel teardown",
+          "Experiment plan for Meta or TikTok",
+          proofUrl ? `Case-study/sample link to attach: ${proofUrl}` : "One relevant fintech performance sample or case study",
+        ],
+        intake_questions: [
+          "What is the current CAC, signup conversion rate, and target ROAS/payback period?",
+          "Which event is optimized in-platform today: signup, KYC start, activation, or purchase?",
+          "Can we see the top three winning and losing creatives with spend and CPA?",
+          "Are there compliance phrases or claims we must avoid?",
+        ],
+        response_template: `I can help with this as a fintech paid-growth audit: creative teardown, 3-4 UGC scripts, and mobile signup-flow fixes for ${channel}. I would start with your current ads, landing page, funnel events, and one performance export, then return a testing plan before the ${deadline} cycle. ${proofUrl ? `Relevant sample: ${proofUrl}` : "I can share a relevant fintech sample/case study."}`,
+        risks: [
+          "Fintech ads need claim discipline; avoid guaranteed ROAS or payout-speed claims unless substantiated.",
+          "TikTok volatility usually means creative volume and hooks matter more than minor media-buying tweaks.",
+          "If tracking events are wrong, creative changes may look worse than they are.",
+        ],
+      };
+    },
+  },
 ];
+
+function inferProduct(brief: string): string {
+  const s = brief.toLowerCase();
+  if (s.includes("shopify")) return "Shopify merchant payout automation";
+  if (s.includes("yc")) return "YC-backed fintech app";
+  return "Fintech product";
+}
+
+function inferChannel(brief: string): string {
+  const s = brief.toLowerCase();
+  if (s.includes("tiktok")) return "TikTok";
+  if (s.includes("meta")) return "Meta Ads";
+  return "Paid social";
+}
+
+function inferBudget(brief: string): string {
+  const match = brief.match(/\$[\d,.]+(?:\s*-\s*\$?[\d,.]+)?\s*k?/i);
+  return match?.[0] ?? "not specified";
+}
+
+function inferDeadline(brief: string): string {
+  const s = brief.toLowerCase();
+  if (s.includes("2 weeks") || s.includes("two weeks")) return "2 weeks";
+  if (s.includes("4-week") || s.includes("4 week") || s.includes("four week")) return "4 weeks";
+  return "next campaign cycle";
+}
 
 function hasAiKey(): boolean {
   return !!(

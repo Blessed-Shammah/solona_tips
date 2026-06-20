@@ -37,7 +37,7 @@ export default function PricingPage() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
         {tiers.map((t) => (
           <div key={t.name} className="card" style={t.highlight ? { boxShadow: "var(--shadow-indigo)", borderColor: "var(--indigo)" } : undefined}>
-            <h3 style={{ margin: "0 0 4px", fontFamily: "var(--font-display)", textTransform: "uppercase", letterSpacing: "-0.02em" }}>{t.name}</h3>
+            <h3 style={{ margin: "0 0 4px", fontFamily: "var(--font-display)", textTransform: "uppercase", letterSpacing: 0 }}>{t.name}</h3>
             <div className="amount" style={{ fontSize: 32 }}>{t.price}<small>{t.sub}</small></div>
             <ul style={{ listStyle: "none", padding: 0, margin: "16px 0 0", fontSize: 14 }}>
               {t.features.map((f) => <li key={f} style={{ padding: "6px 0", color: "var(--text)" }}>✓ {f}</li>)}

@@ -24,7 +24,7 @@ export default function BlogIndex() {
             <Link key={p.slug} href={`/blog/${p.slug}`} style={{ textDecoration: "none" }}>
               <article className="card" style={{ cursor: "pointer" }}>
                 <div className="muted" style={{ fontSize: 12 }}>{p.date} · {p.author}</div>
-                <h2 style={{ margin: "8px 0", letterSpacing: "-0.01em", color: "var(--text)" }}>{p.title}</h2>
+                <h2 style={{ margin: "8px 0", letterSpacing: 0, color: "var(--text)" }}>{p.title}</h2>
                 <p className="muted" style={{ margin: 0, fontSize: 14, lineHeight: 1.6 }}>{p.description}</p>
                 <div style={{ marginTop: 10, display: "flex", gap: 6, flexWrap: "wrap" }}>
                   {p.tags.slice(0, 4).map((t) => <span key={t} className="pill" style={{ fontSize: 11 }}>{t}</span>)}

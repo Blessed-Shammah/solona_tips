@@ -34,10 +34,10 @@ export default function OpengraphImage() {
               display: "flex",
             }}
           />
-          <div style={{ fontSize: 40, fontWeight: 700, letterSpacing: -1 }}>SolTip</div>
+          <div style={{ fontSize: 40, fontWeight: 700, letterSpacing: 0 }}>SolTip</div>
         </div>
 
-        <div style={{ fontSize: 68, fontWeight: 800, lineHeight: 1.05, letterSpacing: -2, maxWidth: 980, display: "flex", flexWrap: "wrap" }}>
+        <div style={{ fontSize: 68, fontWeight: 800, lineHeight: 1.05, letterSpacing: 0, maxWidth: 980, display: "flex", flexWrap: "wrap" }}>
           The commerce layer for the agent economy
         </div>
 

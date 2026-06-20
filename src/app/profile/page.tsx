@@ -68,9 +68,9 @@ export default function ProfilePage() {
       <p className="tag" style={{ marginTop: 24 }}>Your profile</p>
 
       {/* Identity header */}
-      <div className="card" style={{ marginBottom: 16, display: "flex", alignItems: "center", gap: 18 }}>
-        <div style={{ width: 64, height: 64, background: "var(--ink)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 800, boxShadow: "var(--shadow-green)" }}>{initial}</div>
-        <div style={{ flex: 1 }}>
+      <div className="card profile-identity" style={{ marginBottom: 16 }}>
+        <div className="profile-avatar">{initial}</div>
+        <div className="profile-summary">
           <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 800 }}>{me.name}</div>
           <div className="muted" style={{ fontSize: 14 }}>{me.email || "—"}</div>
         </div>
