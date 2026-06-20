@@ -11,6 +11,7 @@ export default function DevelopersPage() {
       <p className="tag">
         The agent-payable tool platform. Get an API key, fund credits, and call premium tools —
         humans or AI agents, metered and settled on-chain.{" "}
+        <Link href="/products">Product catalog →</Link>{" · "}
         <Link href="/pricing">Pricing →</Link>
       </p>
       <span className={`pill ${config.cluster}`} style={{ marginBottom: 16 }}><span className="dot" />{config.cluster.toUpperCase()}</span>

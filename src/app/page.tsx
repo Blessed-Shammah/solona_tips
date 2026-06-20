@@ -17,7 +17,8 @@ export default function Landing() {
             built explicitly for AI agents — and the developers who arm them.
           </p>
           <div className="hero-cta">
-            <Link href="/developers"><button style={{ maxWidth: 220 }}>Read the docs</button></Link>
+            <Link href="/products"><button style={{ maxWidth: 220 }}>Browse products</button></Link>
+            <Link href="/developers"><button className="secondary" style={{ maxWidth: 220 }}>Read the docs</button></Link>
             <span className="hero-live"><span className="dot" />Live on {config.cluster}</span>
           </div>
         </div>
@@ -34,7 +35,7 @@ export default function Landing() {
       </div>
       <section className="cells">
         {[
-          ["🔌", "Agent-payable tools", "By API key with prepaid credits, or pay-per-call via x402. Metered, exactly-once.", "/developers", "Try it"],
+          ["🔌", "Agent-payable tools", "By API key with prepaid credits, or pay-per-call via x402. Metered, exactly-once.", "/products", "Browse tools"],
           ["🧩", "MCP-native", "Every tool exposed over the Model Context Protocol. Claude and any agent can call it.", "/developers", "Connect"],
           ["💸", "Rail-agnostic", "Solana today; cards, chains, bank rails behind one interface. Non-custodial.", "/links", "Payment links"],
           ["🔒", "Exactly-once", "Double-pays and replays can’t double-charge — enforced by the database.", "/blog", "How"],

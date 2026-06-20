@@ -8,6 +8,7 @@ export default function SiteFooter() {
         <span className="muted">© {new Date().getFullYear()} SolTip · the agent-economy commerce layer</span>
         <div className="nav-links">
           <Link href="/developers">Developers</Link>
+          <Link href="/products">Products</Link>
           <Link href="/profile">Profile</Link>
           <Link href="/docs">Docs</Link>
           <Link href="/pricing">Pricing</Link>

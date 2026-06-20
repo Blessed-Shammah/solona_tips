@@ -5,6 +5,7 @@ import { useState } from "react";
 
 const LINKS: [string, string][] = [
   ["/developers", "Developers"],
+  ["/products", "Products"],
   ["/profile", "Profile"],
   ["/docs", "Docs"],
   ["/pricing", "Pricing"],
